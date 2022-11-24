@@ -1,0 +1,78 @@
+[System.Serializable]public class WeightedList<T>: IEnumerable<T>{
+public List<listItem<T>> items = new List<listItem<T>>();
+public float Range{get{
+float rtn = 0;
+foreach(listItem<T> li in items){
+rtn += li.weight;
+}
+return rtn;
+}}
+public int Count{get{return items.Count;}}
+public listItem<T> this[int i]{
+get{return items[i];}
+set{items[i] = value;}
+}
+public T Get(){
+float num = Random.Range(0,Range);
+for(int i=0; i<items.Count;i++){
+num -= items[i].weight;
+if(num<0){
+return items[i].value;
+}
+}
+Debug.Log("Error! returning items[0]");
+return items[0].value;
+}
+public void Add(T value,float weight=0){
+items.Add(new listItem<T>(value,weight));
+}
+public bool Contains(T value){
+for(int i=0; i<items.Count;i++){
+if(EqualityComparer<T>.Default.Equals(items[i],value)){
+return true;
+}
+}
+return false;
+}
+public int IndexOf(T value){
+for(int i=0; i<items.Count;i++){
+if(EqualityComparer<T>.Default.Equals(items[i],value))return i;
+}
+return -1;
+}
+public void Remove(T value){
+for(int i=0; i<items.Count;i++){
+if(EqualityComparer<T>.Default.Equals(items[i],value))items.RemoveAt(i);
+}
+}
+public void RemoveAt(int i){
+items.RemoveAt(i);
+}
+[System.Serializable]public class listItem<T>{
+string name;
+public T value;
+public float weight;
+public listItem(T value,float weight){
+this.value = value;
+this.weight = weight;
+this.name = value.ToString();
+}
+public listItem(){
+}
+public static implicit operator T(listItem<T> This){
+return This.value;
+}
+}
+#region Enumerable
+public IEnumerator<T> GetEnumerator(){
+List<T> list = new List<T>();
+foreach(listItem<T> li in items){
+list.Add(li.value);
+}
+return list.GetEnumerator();
+}
+IEnumerator IEnumerable.GetEnumerator(){
+return GetEnumerator();
+}
+#endregion Enumerable
+}
